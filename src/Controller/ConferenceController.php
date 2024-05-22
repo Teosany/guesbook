@@ -5,6 +5,9 @@ namespace App\Controller;
 use App\Entity\Conference;
 use App\Repository\CommentRepository;
 use App\Repository\ConferenceRepository;
+use Pagerfanta\Adapter\ArrayAdapter;
+use Pagerfanta\Doctrine\ORM\QueryAdapter;
+use Pagerfanta\Pagerfanta;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,14 +27,21 @@ class ConferenceController extends AbstractController
     #[Route('/conference/{id}', name: 'conference')]
     public function show(Request $request, Environment $twig, Conference $conference, CommentRepository $commentRepository): Response
     {
-        $offset = max(0, $request->query->getInt('offset', 0));
-        $paginator = $commentRepository->getCommentPaginator($conference, $offset);
+//        $offset = max(0, $request->query->getInt('offset', 0));
+//        $paginator = $commentRepository->getCommentPaginator($conference, $offset);
+        $comments = Pagerfanta::createForCurrentPageWithMaxPerPage(
+            new ArrayAdapter($commentRepository->findAll()),
+            $request->query->get('page', 1),
+            2
+        );
+
 
         return new Response($twig->render('conference/show.html.twig', [
             'conference' => $conference,
-            'comments' => $paginator,
-            'previous' => $offset - CommentRepository::COMMENTS_PER_PAGE,
-            'next' => min(count($paginator), $offset + CommentRepository::COMMENTS_PER_PAGE)
+            'comments' => $comments,
+//            'comments' => $paginator,
+//            'previous' => $offset - CommentRepository::COMMENTS_PER_PAGE,
+//            'next' => min(count($paginator), $offset + CommentRepository::COMMENTS_PER_PAGE)
         ]));
     }
 }
