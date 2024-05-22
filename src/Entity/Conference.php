@@ -21,8 +21,8 @@ class Conference
     #[ORM\Column(length: 4)]
     private ?string $year = null;
 
-    #[ORM\Column]
-    private ?bool $isInternational = null;
+    #[ORM\Column(nullable: true)]
+    private ?bool $international = null;
 
     /**
      * @var Collection<int, Comment>
@@ -33,6 +33,11 @@ class Conference
     public function __construct()
     {
         $this->comments = new ArrayCollection();
+    }
+
+    public function __toString(): string
+    {
+        return $this->city.' '.$this->year;
     }
 
     public function getId(): ?int
@@ -64,14 +69,14 @@ class Conference
         return $this;
     }
 
-    public function isInternational(): ?bool
+    public function isInternational(): bool
     {
-        return $this->isInternational;
+        return $this->international;
     }
 
-    public function setInternational(bool $isInternational): static
+    public function setInternational(bool $international): static
     {
-        $this->isInternational = $isInternational;
+        $this->international = $international;
 
         return $this;
     }
