@@ -31,7 +31,7 @@
                         {% if next < comments|length %}
                             <a href="{{ path('conference', { id: conference.id, offset: next }) }}">Next</a>
                         {% endif %}
-{#                {{ pagerfanta(comments) }}#}
+                {{ pagerfanta(comments) }}
             {% else %}
                 <div>No comments have been posted yet for this conference.</div>
             {% endif %}
