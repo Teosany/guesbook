@@ -17,31 +17,34 @@ use Twig\Environment;
 class ConferenceController extends AbstractController
 {
     #[Route('/', name: 'homepage')]
-    public function index(Environment $twig, ConferenceRepository $conferenceRepository): Response
+//    public function index(Environment $twig, ConferenceRepository $conferenceRepository): Response
+    public function index(ConferenceRepository $conferenceRepository): Response
     {
-        return new Response($twig->render('conference/index.html.twig', [
+//        return new Response($twig->render('conference/index.html.twig', [
+        return $this->render('conference/index.html.twig', [
             'conferences' => $conferenceRepository->findAll(),
-        ]));
+        ]);
     }
 
     #[Route('/conference/{id}', name: 'conference')]
-    public function show(Request $request, Environment $twig, Conference $conference, CommentRepository $commentRepository): Response
+    public function show(Request $request, Conference $conference, CommentRepository $commentRepository): Response
     {
-//        $offset = max(0, $request->query->getInt('offset', 0));
-//        $paginator = $commentRepository->getCommentPaginator($conference, $offset);
-        $comments = Pagerfanta::createForCurrentPageWithMaxPerPage(
-            new ArrayAdapter($commentRepository->findAll()),
-            $request->query->get('page', 1),
-            2
-        );
+        $offset = max(0, $request->query->getInt('offset', 0));
+        $comments = $commentRepository->getCommentPaginator($conference, $offset);
 
+//        $comments = Pagerfanta::createForCurrentPageWithMaxPerPage(
+//            new ArrayAdapter($commentRepository->findAll()),
+//            $request->query->get('page', 1),
+//            2
+//        );
 
-        return new Response($twig->render('conference/show.html.twig', [
+        dump($request->query, $offset - CommentRepository::COMMENTS_PER_PAGE, min(count($comments), $offset + CommentRepository::COMMENTS_PER_PAGE));
+
+        return $this->render('conference/show.html.twig', [
             'conference' => $conference,
             'comments' => $comments,
-//            'comments' => $paginator,
-//            'previous' => $offset - CommentRepository::COMMENTS_PER_PAGE,
-//            'next' => min(count($paginator), $offset + CommentRepository::COMMENTS_PER_PAGE)
-        ]));
+            'previous' => $offset - CommentRepository::COMMENTS_PER_PAGE,
+            'next' => min(count($comments), $offset + CommentRepository::COMMENTS_PER_PAGE)
+        ]);
     }
 }

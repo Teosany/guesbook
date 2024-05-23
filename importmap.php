@@ -16,4 +16,16 @@ return [
         'path' => './assets/app.js',
         'entrypoint' => true,
     ],
+    'postcss' => [
+        'version' => '8.4.38',
+    ],
+    'picocolors' => [
+        'version' => '1.0.0',
+    ],
+    'nanoid/non-secure' => [
+        'version' => '3.3.7',
+    ],
+    'postcss-loader' => [
+        'version' => '8.1.1',
+    ],
 ];
